@@ -1,0 +1,17 @@
+{
+  "target": "accident_severity",
+  "task": "classification",
+  "numeric_features": [
+    "speed_kmh",
+    "visibility_m",
+    "rainfall_mm",
+    "nearby_vehicles"
+  ],
+  "categorical_features": [
+    "hazard"
+  ],
+  "metrics": {
+    "accuracy": 0.97,
+    "f1_weighted": 0.9697347815104825
+  }
+}

@@ -1,0 +1,22 @@
+======================================================================
+FILE: dummy_data.csv
+shape: (500, 6)
+
+columns and types:
+speed_kmh             int64
+visibility_m          int64
+rainfall_mm           int64
+hazard               object
+nearby_vehicles       int64
+accident_severity    object
+
+missing values:
+none
+
+duplicate rows: 0
+
+first 3 rows:
+   speed_kmh  visibility_m  rainfall_mm      hazard  nearby_vehicles accident_severity
+0         71          1149           22  pedestrian               13            Medium
+1        112           203           15      animal               17              High
+2         34          1729           30     pothole               14            Medium

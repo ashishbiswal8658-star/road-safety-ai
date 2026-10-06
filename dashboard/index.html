@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DriveSafe AI | Road Safety Platform</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+body {
+    font-family: 'Outfit', sans-serif;
+    margin: 0;
+    color: #e0e0e0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+/* Fixed Background */
+#bgCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+}
+
+/* Navbar */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(20, 20, 25, 0.8);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    box-sizing: border-box;
+}
+
+.navbar .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #00e5ff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar .nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.navbar .nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: color 0.3s;
+}
+
+.navbar .nav-links a:hover {
+    color: #00e5ff;
+}
+
+/* Sections */
+section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 20px;
+    box-sizing: border-box;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    max-width: 800px;
+    margin-top: 50px;
+}
+
+.hero h1 {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #00e5ff, #0072ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 10px 30px rgba(0, 229, 255, 0.3);
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+.hero .cta-btn {
+    display: inline-block;
+    padding: 15px 40px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #00e5ff, #0072ff);
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 700;
+    box-shadow: 0 10px 20px rgba(0, 114, 255, 0.4);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.hero .cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(0, 114, 255, 0.6);
+}
+
+/* Features Section */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.feature-card {
+    background: rgba(30, 30, 36, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    transition: transform 0.3s, background 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    background: rgba(40, 40, 48, 0.8);
+    border-color: #00e5ff;
+}
+
+.feature-card i {
+    font-size: 3rem;
+    color: #00e5ff;
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.feature-card p {
+    color: #aaa;
+    line-height: 1.5;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    margin-bottom: 50px;
+    text-align: center;
+    color: #fff;
+}
+
+/* Dashboard Container Styles (adapted from original) */
+.dashboard-wrapper {
+    perspective: 1200px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    background: rgba(30, 30, 36, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 40px 35px;
+    border-radius: 30px;
+    box-shadow: 
+        0 20px 50px rgba(0,0,0,0.8),
+        inset 0 0 0 1px rgba(255,255,255,0.1);
+    width: 100%;
+    max-width: 500px;
+    transform-style: preserve-3d;
+    transition: transform 0.1s;
+}
+
+.container h2 {
+    font-size: 1.9rem;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: #00e5ff;
+    text-shadow: 0 4px 10px rgba(0, 229, 255, 0.4);
+    transform: translateZ(30px);
+}
+
+label {
+    display: block;
+    margin-top: 18px;
+    font-size: 0.95rem;
+    color: #fff;
+    font-weight: 600;
+    transform: translateZ(10px);
+}
+
+input[type="range"], input[type="number"], select {
+    width: 100%;
+    padding: 14px 16px;
+    margin-top: 8px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    border: none;
+    background: rgba(0,0,0,0.6);
+    color: #00e5ff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    outline: none;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8);
+    transition: all 0.3s ease;
+    transform: translateZ(5px);
+}
+
+input:focus, select:focus {
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8), 0 0 15px rgba(0, 229, 255, 0.3);
+}
+
+.btn-run {
+    margin-top: 35px;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #00e5ff, #0072ff);
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 0 #0050b3, 0 15px 20px rgba(0, 0, 0, 0.5);
+    transition: all 0.15s ease;
+    transform: translateZ(40px);
+}
+
+.btn-run:active {
+    transform: translateZ(40px) translateY(8px);
+    box-shadow: 0 0px 0 #0050b3, 0 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+#out {
+    margin-top: 35px;
+    display: none;
+    animation: slideUp 0.5s ease forwards;
+    transform: translateZ(20px);
+}
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px) translateZ(20px); }
+    to { opacity: 1; transform: translateY(0) translateZ(20px); }
+}
+
+.result-card {
+    background: rgba(0,0,0,0.6);
+    border-radius: 16px;
+    padding: 20px;
+    color: #fff;
+    margin-bottom: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.meter-container {
+    background: #111;
+    border-radius: 10px;
+    height: 14px;
+    width: 100%;
+    margin: 15px 0;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8);
+}
+.meter-fill {
+    height: 100%;
+    border-radius: 10px;
+    width: 0%;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(255,255,255,0.4);
+}
+
+.ai-badge {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    background: #111;
+    color: #00e5ff;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 4px 4px 10px rgba(0,0,0,0.8);
+    border: 1px solid #00e5ff;
+    transform: translateZ(30px);
+}
+
+.Low .meter-fill { background: linear-gradient(90deg, #00f260, #0575e6); }
+.Medium .meter-fill { background: linear-gradient(90deg, #f2c94c, #f2994a); }
+.High .meter-fill { background: linear-gradient(90deg, #ff0844, #ffb199); }
+
+.advice-box {
+    background: rgba(0,0,0,0.5);
+    border-left: 4px solid #00e5ff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-size: 0.95rem;
+    color: #00e5ff;
+}
+
+.voice-switch {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(0,0,0,0.4);
+    padding: 12px 16px;
+    border-radius: 15px;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.6);
+    margin-bottom: 20px;
+    transform: translateZ(15px);
+}
+
+/* Footer */
+footer {
+    background: rgba(20, 20, 25, 0.9);
+    padding: 40px 20px;
+    text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+footer p {
+    color: #aaa;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 15px 20px;
+    }
+    .navbar .nav-links {
+        display: none;
+    }
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+}
+</style>
+</head>
+<body>
+
+<!-- 3D Background -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <a href="#" class="logo">
+        <i class="fa-solid fa-shield-halved"></i> DriveSafe AI
+    </a>
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#features">Features</a>
+        <a href="#api">API Docs</a>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero" id="home">
+    <h1>Predictive Road Safety Intelligence</h1>
+    <p>Leveraging advanced machine learning and real-time 3D simulation to anticipate hazards and optimize driving conditions. Ensure safety before you even hit the road.</p>
+    <a href="#dashboard" class="cta-btn">Try the Simulator</a>
+</section>
+
+<!-- Dashboard Section -->
+<section id="dashboard">
+    <h2 class="section-title">Interactive Risk Dashboard</h2>
+    <div class="dashboard-wrapper">
+        <div class="container" id="card3d">
+            <h2>🛣️ 3D Risk Intelligence</h2>
+            
+            <div class="voice-switch">
+                <span style="font-weight:700; color:#00e5ff;">🔊 Voice Assistant</span>
+                <input id="voiceToggle" type="checkbox" style="width:20px; height:20px; margin:0;" checked>
+            </div>
+
+            <label>Speed (km/h) <span id="speedVal" style="float:right; color:#00e5ff">60</span>
+                <input id="speed" type="range" min="0" max="160" value="60" oninput="speedVal.innerText=this.value; update3D();">
+            </label>
+            
+            <label>Visibility (m)
+                <input id="vis" type="range" min="10" max="2000" value="500" oninput="visVal.innerText=this.value+' m'; update3D();">
+                <span id="visVal" style="float:right; color:#00e5ff; margin-top:-25px;">500 m</span>
+            </label>
+            
+            <label>Rainfall (mm)
+                <input id="rain" type="range" min="0" max="50" value="0" oninput="rainVal.innerText=this.value+' mm'; update3D();">
+                <span id="rainVal" style="float:right; color:#00e5ff; margin-top:-25px;">0 mm</span>
+            </label>
+            
+            <label>Hazard Ahead
+                <select id="hazard" onchange="update3D()">
+                    <option>none</option>
+                    <option>pothole</option>
+                    <option>animal</option>
+                    <option>pedestrian</option>
+                    <option>vehicle</option>
+                    <option>obstacle</option>
+                </select>
+            </label>
+            
+            <label>Hazard Distance (m)
+                <input id="dist" type="number" value="150" oninput="update3D()">
+            </label>
+            
+            <label>Nearby Vehicles
+                <input id="veh" type="number" value="2" oninput="update3D()">
+            </label>
+            
+            <button class="btn-run" onclick="check()">⚡ Run 3D Diagnostics</button>
+            
+            <div id="out">
+                <div id="resultCard" class="result-card">
+                    <div id="aiBadge" class="ai-badge">AI: ?</div>
+                    
+                    <h3 id="warnTitle" style="margin:0; font-size:1.4rem; color: #fff;"></h3>
+                    
+                    <div style="display:flex; justify-content:space-between; margin-top:12px;">
+                        <span style="font-weight:600; color:#aaa;">System Risk:</span>
+                        <span id="scoreText" style="font-weight:700; color: #fff;"></span>
+                    </div>
+                    
+                    <div class="meter-container">
+                        <div id="meterFill" class="meter-fill"></div>
+                    </div>
+                    
+                    <div style="font-weight:600; color:#aaa; margin-top:15px;">🔍 Factors:</div>
+                    <ul id="reasonsList" style="color: #ddd; font-size: 0.95rem; margin-top: 8px;"></ul>
+                </div>
+                
+                <div id="adviceBox" class="advice-box"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features">
+    <h2 class="section-title">Why Choose DriveSafe AI?</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <i class="fa-solid fa-microchip"></i>
+            <h3>Machine Learning Core</h3>
+            <p>Our models are trained on millions of data points to accurately predict accident probabilities based on environmental factors.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fa-solid fa-cube"></i>
+            <h3>Real-time 3D Simulation</h3>
+            <p>Visualize road conditions dynamically. The Three.js powered background updates instantly to reflect weather and hazard changes.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fa-solid fa-bolt"></i>
+            <h3>Instant Diagnostics</h3>
+            <p>Receive immediate feedback, risk scores, and actionable advice to mitigate dangers before they escalate.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fa-solid fa-volume-high"></i>
+            <h3>Voice Assistant</h3>
+            <p>Keep your eyes on the road. Our built-in voice synthesis alerts you of high-risk conditions and required actions.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fa-solid fa-code"></i>
+            <h3>Developer API</h3>
+            <p>Integrate our predictive models directly into your own applications or fleet management systems via RESTful endpoints.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fa-solid fa-shield-halved"></i>
+            <h3>Proactive Safety</h3>
+            <p>Shift from reactive to proactive. Anticipate issues like potholes or pedestrians with distance-based hazard calculations.</p>
+        </div>
+    </div>
+</section>
+
+<!-- API Section -->
+<section id="api" style="min-height: auto; padding-bottom: 100px;">
+    <h2 class="section-title">Developer API Integration</h2>
+    <div style="background: rgba(30, 30, 36, 0.6); padding: 40px; border-radius: 20px; max-width: 800px; width: 100%; border: 1px solid rgba(255,255,255,0.1);">
+        <p style="color: #ccc; margin-bottom: 20px; line-height: 1.6;">Access our core prediction engine programmatically. Send environmental telemetry and receive instantaneous risk assessments.</p>
+        <div style="background: #111; padding: 20px; border-radius: 10px; overflow-x: auto;">
+            <code style="color: #00e5ff; font-family: monospace;">
+                POST /predict<br>
+                Content-Type: application/json<br><br>
+                {<br>
+                &nbsp;&nbsp;"speed_kmh": 80,<br>
+                &nbsp;&nbsp;"visibility_m": 200,<br>
+                &nbsp;&nbsp;"rainfall_mm": 10,<br>
+                &nbsp;&nbsp;"hazard": "vehicle",<br>
+                &nbsp;&nbsp;"hazard_distance_m": 50,<br>
+                &nbsp;&nbsp;"nearby_vehicles": 5<br>
+                }
+            </code>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2026 DriveSafe AI Platform. All rights reserved.</p>
+</footer>
+
+<script>
+// --- THREE.JS REAL-WORLD VIDEO SIMULATOR ---
+const canvas = document.getElementById('bgCanvas');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x121216);
+scene.fog = new THREE.FogExp2(0x121216, 0.005); // Initial fog
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+// Lighting
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+scene.add(ambientLight);
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+dirLight.position.set(-20, 50, -20);
+scene.add(dirLight);
+
+// The Road
+const roadGeo = new THREE.PlaneGeometry(30, 2000);
+const roadMat = new THREE.MeshStandardMaterial({color: 0x1a1a1a, roughness: 0.9});
+const road = new THREE.Mesh(roadGeo, roadMat);
+road.rotation.x = -Math.PI / 2;
+scene.add(road);
+
+// Road Lines (Moving)
+const gridGeo = new THREE.PlaneGeometry(2, 2000, 1, 50);
+const gridMat = new THREE.MeshBasicMaterial({color: 0xffcc00, wireframe: true, transparent: true, opacity: 0.5});
+const lines = new THREE.Mesh(gridGeo, gridMat);
+lines.rotation.x = -Math.PI / 2;
+lines.position.y = 0.1;
+scene.add(lines);
+
+// Real-world Architecture (Buildings on sides)
+const buildings = new THREE.Group();
+const bGeo = new THREE.BoxGeometry(15, 60, 15);
+const bMat1 = new THREE.MeshStandardMaterial({color: 0x2a2a35, roughness: 0.7});
+const bMat2 = new THREE.MeshStandardMaterial({color: 0x1f2029, roughness: 0.7});
+
+for(let i=0; i<60; i++) {
+    let b = new THREE.Mesh(bGeo, Math.random() > 0.5 ? bMat1 : bMat2);
+    // Put them on left or right
+    b.position.x = (Math.random() > 0.5 ? 1 : -1) * (35 + Math.random() * 40);
+    b.position.z = -Math.random() * 1000;
+    b.position.y = 30 + (Math.random() * 20);
+    buildings.add(b);
+}
+scene.add(buildings);
+
+// Rain particles
+const rainGeo = new THREE.BufferGeometry();
+const rainCount = 5000;
+const rainPositions = new Float32Array(rainCount * 3);
+for(let i=0; i<rainCount; i++) {
+    rainPositions[i*3] = (Math.random() - 0.5) * 200;
+    rainPositions[i*3+1] = Math.random() * 100;
+    rainPositions[i*3+2] = (Math.random() - 0.5) * 200;
+}
+rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPositions, 3));
+const rainMat = new THREE.PointsMaterial({color: 0xaaaaaa, size: 0.15, transparent: true, opacity: 0});
+const rainSys = new THREE.Points(rainGeo, rainMat);
+scene.add(rainSys);
+
+// The Hazard (Red cube appearing on road)
+const hazGeo = new THREE.BoxGeometry(4, 4, 4);
+const hazMat = new THREE.MeshStandardMaterial({color: 0xff0055, emissive: 0x660022});
+const hazardObj = new THREE.Mesh(hazGeo, hazMat);
+hazardObj.position.y = 2;
+hazardObj.position.z = -200;
+hazardObj.visible = false;
+scene.add(hazardObj);
+
+camera.position.y = 8;
+camera.position.z = 20;
+
+let simSpeed = 1.0;
+let rainSpeed = 0;
+
+function animate() {
+    requestAnimationFrame(animate);
+    
+    // Simulate Driving Forward
+    lines.position.z += simSpeed * 1.5;
+    if(lines.position.z > 40) lines.position.z = 0;
+    
+    buildings.children.forEach(b => {
+        b.position.z += simSpeed * 1.5;
+        if(b.position.z > 50) b.position.z -= 1000;
+    });
+
+    if(hazardObj.visible) {
+        hazardObj.position.z += simSpeed * 1.5;
+        if(hazardObj.position.z > 20) hazardObj.position.z = -300;
+    }
+
+    // Rain drop physics
+    if(rainMat.opacity > 0) {
+        const positions = rainSys.geometry.attributes.position.array;
+        for(let i=0; i<rainCount; i++) {
+            positions[i*3+1] -= rainSpeed;
+            if(positions[i*3+1] < 0) positions[i*3+1] = 100;
+        }
+        rainSys.geometry.attributes.position.needsUpdate = true;
+    }
+    
+    renderer.render(scene, camera);
+}
+animate();
+
+// --- LINK UI TO 3D VIDEO ---
+function update3D() {
+    const s = document.getElementById('speed').value;
+    const v = document.getElementById('vis').value;
+    const r = document.getElementById('rain').value;
+    const h = document.getElementById('hazard').value;
+
+    simSpeed = s / 60; // 60km/h = normal speed
+
+    // Visibility alters fog
+    let fogDensity = 1.5 / v; 
+    if(fogDensity > 0.1) fogDensity = 0.1;
+    scene.fog.density = fogDensity;
+
+    // Rain
+    if(r > 0) {
+        rainMat.opacity = Math.min(r / 30, 0.6);
+        rainSpeed = 1 + (r / 20);
+    } else {
+        rainMat.opacity = 0;
+    }
+
+    // Hazard
+    if(h !== "none") {
+        hazardObj.visible = true;
+    } else {
+        hazardObj.visible = false;
+    }
+}
+update3D(); // Init
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// --- UI LOGIC ---
+const card = document.getElementById('card3d');
+document.addEventListener('mousemove', (e) => {
+    // Only apply 3D effect if hovering over the dashboard area
+    const rect = card.getBoundingClientRect();
+    if (e.clientX >= rect.left && e.clientX <= rect.right && 
+        e.clientY >= rect.top && e.clientY <= rect.bottom) {
+        
+        // Calculate relative position within card for subtle tilt
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        let xAxis = (centerX - x) / 20;
+        let yAxis = (centerY - y) / 20;
+        card.style.transform = `rotateY(${xAxis}deg) rotateX(${-yAxis}deg)`;
+    } else {
+        card.style.transform = `rotateY(0deg) rotateX(0deg)`;
+    }
+});
+
+async function check() {
+    const btn = document.querySelector('.btn-run');
+    btn.innerText = "Analyzing Video Feed...";
+
+    const body = {
+        speed_kmh: +document.getElementById('speed').value,
+        visibility_m: +document.getElementById('vis').value,
+        rainfall_mm: +document.getElementById('rain').value,
+        hazard: document.getElementById('hazard').value,
+        hazard_distance_m: document.getElementById('hazard').value === "none" ? null : +document.getElementById('dist').value,
+        nearby_vehicles: +document.getElementById('veh').value
+    };
+
+    try {
+        const r1 = await fetch("/risk", {
+            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)
+        });
+        const d_logic = await r1.json();
+
+        const r2 = await fetch("/predict", {
+            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)
+        });
+        const d_ai = r2.ok ? await r2.json() : { prediction: "N/A" };
+
+        document.getElementById('out').style.display = "block";
+        const resultCard = document.getElementById('resultCard');
+        
+        resultCard.className = "result-card " + d_logic.risk_level;
+        document.getElementById('warnTitle').innerText = d_logic.warning;
+        document.getElementById('scoreText').innerText = `${d_logic.risk_level} (${d_logic.risk_score}/100)`;
+        
+        setTimeout(() => {
+            document.getElementById('meterFill').style.width = d_logic.risk_score + "%";
+        }, 100);
+
+        const badge = document.getElementById('aiBadge');
+        badge.innerText = "🤖 AI Predicts: " + d_ai.prediction;
+        if(d_ai.prediction === "High") badge.style.color = "#ff0844";
+        else if(d_ai.prediction === "Medium") badge.style.color = "#f2c94c";
+        else badge.style.color = "#00f260";
+
+        const ul = document.getElementById('reasonsList');
+        ul.innerHTML = "";
+        if (d_logic.reasons.length > 0) {
+            d_logic.reasons.forEach(r => {
+                let li = document.createElement("li");
+                li.innerText = r;
+                ul.appendChild(li);
+            });
+        } else {
+            ul.innerHTML = "<li>All parameters nominal.</li>";
+        }
+
+        let adviceHTML = "💡 <b>AI Protocol:</b><br>";
+        let spokenAdvice = [];
+        if (body.speed_kmh > 80) { adviceHTML += "- Reduce speed immediately.<br>"; spokenAdvice.push("Reduce speed immediately."); }
+        if (body.visibility_m < 300) { adviceHTML += "- Turn on fog lights.<br>"; spokenAdvice.push("Turn on fog lights."); }
+        if (body.rainfall_mm > 5) { adviceHTML += "- Slippery road alert.<br>"; spokenAdvice.push("Roads are slippery."); }
+        if (body.hazard !== "none") { adviceHTML += `- Prepare to evade ${body.hazard}.<br>`; spokenAdvice.push(`Prepare to evade ${body.hazard} ahead.`); }
+        if (d_logic.risk_score < 30) { adviceHTML += "- Safe trajectory confirmed."; spokenAdvice.push("Safe trajectory confirmed."); }
+        
+        document.getElementById('adviceBox').innerHTML = adviceHTML;
+
+        if (document.getElementById('voiceToggle').checked) {
+            window.speechSynthesis.cancel(); 
+            let speechText = "";
+            if (d_logic.risk_level === "High") speechText = "Alert! " + spokenAdvice.join(" ");
+            else if (d_logic.risk_level === "Medium") speechText = "Warning. " + spokenAdvice.join(" ");
+            else speechText = "All clear. " + spokenAdvice.join(" ");
+            
+            let speech = new SpeechSynthesisUtterance(speechText);
+            speech.rate = 1.0;
+            window.speechSynthesis.speak(speech);
+        }
+
+    } catch (e) {
+        alert("Server connection failed.");
+    }
+
+    btn.innerText = "⚡ Run 3D Diagnostics";
+}
+</script>
+</body>
+</html>
